@@ -3,7 +3,7 @@ window.onload = () => {
 };
 
 let startup = () => {
-  const canvas = document.getElementById("myGLCanvas");
+  const canvas = document.getElementById('myGLCanvas');
   const gl = WebGLDebugUtils.makeDebugContext(createGLContext(canvas));
   const shaderProgram = setupShaders(gl);
   const vertexBuffer = setupBuffers(gl);
@@ -12,7 +12,7 @@ let startup = () => {
 };
 
 let createGLContext = canvas => {
-  const names = ["webgl", "experimental-webgl"];
+  const names = ['webgl', 'experimental-webgl'];
   let context = null;
 
   for (var i = 0; i < names.length; i++) {
@@ -30,9 +30,9 @@ let createGLContext = canvas => {
     if (!window.WebGLRenderingContext) {
       // このブラウザはWebGLを認識しない
       // ユーザーがブラウザの更新情報を得られるように"http://get.webgl.org"へのリンクを示す．
-      alert("Access to http://get.webgl.org");
+      alert('Access to http://get.webgl.org');
     } else {
-      alert("Access to http://get.webgl.org/troubleshooting");
+      alert('Access to http://get.webgl.org/troubleshooting');
     }
   }
 
@@ -47,9 +47,9 @@ let loadShaderFromDOM = (gl, id) => {
 
   const shaderSource = shaderScript.textContent;
   let shader;
-  if (shaderScript.type === "x-shader/x-fragment") {
+  if (shaderScript.type === 'x-shader/x-fragment') {
     shader = gl.createShader(gl.FRAGMENT_SHADER);
-  } else if (shaderScript.type === "x-shader/x-vertex") {
+  } else if (shaderScript.type === 'x-shader/x-vertex') {
     shader = gl.createShader(gl.VERTEX_SHADER);
   } else {
     return null;
@@ -73,7 +73,7 @@ let loadShader = (gl, type, shaderSource) => {
   gl.compileShader(shader);
 
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    alert("Error compiling shader" + gl.getShaderInfoLog(shader));
+    alert('Error compiling shader' + gl.getShaderInfoLog(shader));
     gl.deleteShader(shader);
     return null;
   }
@@ -100,8 +100,8 @@ let setupShaders = gl => {
   //   fragmentShaderSource
   // );
 
-  const vertexShader = loadShaderFromDOM(gl, "shader-vs");
-  const fragmentShader = loadShaderFromDOM(gl, "shader-fs");
+  const vertexShader = loadShaderFromDOM(gl, 'shader-vs');
+  const fragmentShader = loadShaderFromDOM(gl, 'shader-fs');
 
   const shaderProgram = gl.createProgram();
   gl.attachShader(shaderProgram, vertexShader);
@@ -109,14 +109,14 @@ let setupShaders = gl => {
   gl.linkProgram(shaderProgram);
 
   if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-    alert("Failed to setup shaders");
+    alert('Failed to setup shaders');
   }
 
   gl.useProgram(shaderProgram);
 
   shaderProgram.vertexPositionAttribute = gl.getAttribLocation(
     shaderProgram,
-    "aVertexPosition"
+    'aVertexPosition'
   );
 
   return shaderProgram;
