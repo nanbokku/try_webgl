@@ -4,10 +4,10 @@ window.onload = () => {
 
 let startup = () => {
   const canvas = document.getElementById('myGLCanvas');
-  const gl = createGLContext(canvas);
+  const gl = WebGLDebugUtils.makeDebugContext(createGLContext(canvas));
   const shaderProgram = setupShaders(gl);
   const vertexBuffer = setupBuffers(gl);
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clearColor(0.0, 1.0, 0.0, 1.0);
   draw(gl, shaderProgram, vertexBuffer);
 };
 
@@ -39,6 +39,34 @@ let createGLContext = canvas => {
   return context;
 };
 
+let loadShaderFromDOM = (gl, id) => {
+  const shaderScript = document.getElementById(id);
+  if (!shaderScript) {
+    return null;
+  }
+
+  const shaderSource = shaderScript.textContent;
+  let shader;
+  if (shaderScript.type === 'x-shader/x-fragment') {
+    shader = gl.createShader(gl.FRAGMENT_SHADER);
+  } else if (shaderScript.type === 'x-shader/x-vertex') {
+    shader = gl.createShader(gl.VERTEX_SHADER);
+  } else {
+    return null;
+  }
+
+  gl.shaderSource(shader, shaderSource);
+  gl.compileShader(shader);
+
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    alert(gl.getShaderInfoLog(shader));
+    deleteShader(shader);
+    return null;
+  }
+
+  return shader;
+};
+
 let loadShader = (gl, type, shaderSource) => {
   let shader = gl.createShader(type);
   gl.shaderSource(shader, shaderSource);
@@ -54,23 +82,26 @@ let loadShader = (gl, type, shaderSource) => {
 };
 
 let setupShaders = gl => {
-  const vertexShaderSource =
-    'attribute vec3 aVertexPosition;\n' +
-    'void main() {\n' +
-    ' gl_Position = vec4(aVertexPosition, 1.0);\n' +
-    '}\n';
-  const fragmentShaderSource =
-    'precision mediump float;\n' +
-    'void main() {\n' +
-    ' gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n' +
-    '}\n';
+  // const vertexShaderSource =
+  //   "attribute vec3 aVertexPosition;\n" +
+  //   "void main() {\n" +
+  //   " gl_Position = vec4(aVertexPosition, 1.0);\n" +
+  //   "}\n";
+  // const fragmentShaderSource =
+  //   "precision mediump float;\n" +
+  //   "void main() {\n" +
+  //   " gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n" +
+  //   "}\n";
 
-  const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-  const fragmentShader = loadShader(
-    gl,
-    gl.FRAGMENT_SHADER,
-    fragmentShaderSource
-  );
+  // const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+  // const fragmentShader = loadShader(
+  //   gl,
+  //   gl.FRAGMENT_SHADER,
+  //   fragmentShaderSource
+  // );
+
+  const vertexShader = loadShaderFromDOM(gl, 'shader-vs');
+  const fragmentShader = loadShaderFromDOM(gl, 'shader-fs');
 
   const shaderProgram = gl.createProgram();
   gl.attachShader(shaderProgram, vertexShader);
