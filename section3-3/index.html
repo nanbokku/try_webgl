@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title>Listing 2-1, A First WebGL Example</title>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <canvas id="myGLCanvas" width="500" height="500"></canvas>
+    <script type="x-shader/x-vertex" id="shader-vs">
+      attribute vec3 aVertexPosition;
+      uniform vec2 uResolution;
+
+      void main() {
+        vec3 zeroToOne = aVertexPosition * 5.0 / vec3(uResolution, 0.0);
+        vec3 oneToTwo = zeroToOne * 2.0;
+        vec3 clipSpace = oneToTwo - 1.0;
+        gl_Position = vec4(clipSpace * vec3(1.0, -1.0, 0.0), 1.0);
+      }
+    </script>
+    <script type="x-shader/x-fragment" id="shader-fs">
+      precision mediump float;
+
+      void main() {
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+      }
+    </script>
+    <script type="text/javascript" src="./js/webgl-debug.js"></script>
+    <script type="text/javascript" src="./js/index.js"></script>
+  </body>
+</html>
