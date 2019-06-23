@@ -2,12 +2,12 @@ export class GL {
   constructor() {
     this.viewportWidth = 0;
     this.viewportHeight = 0;
-    this.shaderProgram = new Object(ProgramObject);
-    this.hexagonVertexBuffer = new Object(BufferObject);
-    this.triangleVertexBuffer = new Object(BufferObject);
-    this.triangleVertexColorBuffer = new Object(BufferObject);
-    this.stripVertexBuffer = new Object(BufferObject);
-    this.stripElementBuffer = new Object(BufferObject);
+    this.shaderProgram = Object.create(ProgramObject);
+    this.hexagonVertexBuffer = Object.create(BufferObject);
+    this.triangleVertexBuffer = Object.create(BufferObject);
+    this.triangleVertexColorBuffer = Object.create(BufferObject);
+    this.stripVertexBuffer = Object.create(BufferObject);
+    this.stripElementBuffer = Object.create(BufferObject);
     this.gl = WebGLDebugUtils.makeDebugContext(this.createContext());
 
     this.setupShaders();
@@ -47,68 +47,68 @@ export class GL {
 
   draw() {
     this.gl.viewport(0, 0, this.viewportWidth, this.viewportHeight);
-    // this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
-    // // 六角形の描画
-    // this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.hexagonVertexBuffer.buffer);
-    // // 無効にするのは，全部の頂点に一定の色を使うため
-    // this.gl.disableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
-    // this.gl.vertexAttrib4f(
-    //   this.shaderProgram.vertexColorAttribute,
-    //   0.0,
-    //   0.0,
-    //   0.0,
-    //   1.0
-    // );
-    // this.gl.vertexAttribPointer(
-    //   this.hexagonVertexBuffer.vertexPositionAttribute,
-    //   this.hexagonVertexBuffer.itemSize,
-    //   this.gl.FLOAT,
-    //   false,
-    //   0,
-    //   0
-    // );
+    // 六角形の描画
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.hexagonVertexBuffer.buffer);
+    // 無効にするのは，全部の頂点に一定の色を使うため
+    this.gl.disableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
+    this.gl.vertexAttrib4f(
+      this.shaderProgram.vertexColorAttribute,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    );
+    this.gl.vertexAttribPointer(
+      this.shaderProgram.vertexPositionAttribute,
+      this.hexagonVertexBuffer.itemSize,
+      this.gl.FLOAT,
+      false,
+      0,
+      0
+    );
 
-    // this.gl.drawArrays(
-    //   this.gl.LINE_STRIP,
-    //   0,
-    //   this.hexagonVertexBuffer.numOfItems
-    // );
+    this.gl.drawArrays(
+      this.gl.LINE_STRIP,
+      0,
+      this.hexagonVertexBuffer.numOfItems
+    );
 
-    // // 三角形の描画
-    // // 各頂点に違う色を使う
-    // this.gl.enableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
-    // this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.triangleVertexBuffer.buffer);
-    // this.gl.vertexAttribPointer(
-    //   this.shaderProgram.vertexPositionAttribute,
-    //   this.triangleVertexBuffer.itemSize,
-    //   this.gl.FLOAT,
-    //   false,
-    //   0,
-    //   0
-    // );
+    // 三角形の描画
+    // 各頂点に違う色を使う
+    this.gl.enableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.triangleVertexBuffer.buffer);
+    this.gl.vertexAttribPointer(
+      this.shaderProgram.vertexPositionAttribute,
+      this.triangleVertexBuffer.itemSize,
+      this.gl.FLOAT,
+      false,
+      0,
+      0
+    );
 
-    // this.gl.bindBuffer(
-    //   this.gl.ARRAY_BUFFER,
-    //   this.triangleVertexColorBuffer.buffer
-    // );
-    // this.gl.vertexAttribPointer(
-    //   this.shaderProgram.vertexColorAttribute,
-    //   this.triangleVertexColorBuffer.itemSize,
-    //   this.gl.FLOAT,
-    //   true,
-    //   0,
-    //   0
-    // );
+    this.gl.bindBuffer(
+      this.gl.ARRAY_BUFFER,
+      this.triangleVertexColorBuffer.buffer
+    );
+    this.gl.vertexAttribPointer(
+      this.shaderProgram.vertexColorAttribute,
+      this.triangleVertexColorBuffer.itemSize,
+      this.gl.FLOAT,
+      true,
+      0,
+      0
+    );
 
-    // this.gl.drawArrays(
-    //   this.gl.TRIANGLES,
-    //   0,
-    //   this.triangleVertexBuffer.numOfItems
-    // );
+    this.gl.drawArrays(
+      this.gl.TRIANGLES,
+      0,
+      this.triangleVertexBuffer.numOfItems
+    );
 
     // 三角形ストリップ
-    // this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.stripVertexBuffer.buffer);
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.stripVertexBuffer.buffer);
     // 全ての頂点に一定の色を使うため
     this.gl.disableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
     this.gl.vertexAttrib4f(
@@ -146,78 +146,78 @@ export class GL {
       1.0
     );
 
-    // // 補助線
-    // this.gl.drawArrays(this.gl.LINE_STRIP, 0, 11);
-    // this.gl.drawArrays(this.gl.LINE_STRIP, 11, 11);
+    // 補助線
+    this.gl.drawArrays(this.gl.LINE_STRIP, 0, 11);
+    this.gl.drawArrays(this.gl.LINE_STRIP, 11, 11);
   }
 
   setupBuffers() {
-    // // 六角形
-    // this.hexagonVertexBuffer.buffer = this.gl.createBuffer();
-    // this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.hexagonVertexBuffer.buffer);
+    // 六角形
+    this.hexagonVertexBuffer.buffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.hexagonVertexBuffer.buffer);
 
-    // const hexagonVertices = [
-    //   -0.3,
-    //   0.6,
-    //   0.0,
-    //   -0.4,
-    //   0.8,
-    //   0.0,
-    //   -0.6,
-    //   0.8,
-    //   0.0,
-    //   -0.7,
-    //   0.6,
-    //   0.0,
-    //   -0.6,
-    //   0.4,
-    //   0.0,
-    //   -0.4,
-    //   0.4,
-    //   0.0,
-    //   -0.3,
-    //   0.6,
-    //   0.0
-    // ];
-    // this.triangleVertexBuffer.itemSize = 3;
-    // this.triangleVertexBuffer.numOfItems = 7;
+    const hexagonVertices = [
+      -0.3,
+      0.6,
+      0.0,
+      -0.4,
+      0.8,
+      0.0,
+      -0.6,
+      0.8,
+      0.0,
+      -0.7,
+      0.6,
+      0.0,
+      -0.6,
+      0.4,
+      0.0,
+      -0.4,
+      0.4,
+      0.0,
+      -0.3,
+      0.6,
+      0.0
+    ];
+    this.hexagonVertexBuffer.itemSize = 3;
+    this.hexagonVertexBuffer.numOfItems = 7;
 
-    // this.gl.bufferData(
-    //   this.gl.ARRAY_BUFFER,
-    //   new Float32Array(hexagonVertices),
-    //   this.gl.STATIC_DRAW
-    // );
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array(hexagonVertices),
+      this.gl.STATIC_DRAW
+    );
 
-    // // 三角形
-    // this.triangleVertexBuffer.buffer = this.gl.createBuffer();
-    // this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.triangleVertexBuffer.buffer);
+    // 三角形
+    this.triangleVertexBuffer.buffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.triangleVertexBuffer.buffer);
 
-    // const triangleVertices = [0.3, 0.4, 0.0, 0.7, 0.4, 0.0, 0.5, 0.8, 0.0];
-    // this.triangleVertexBuffer.itemSize = 3;
-    // this.triangleVertexBuffer.numOfItems = 3;
+    const triangleVertices = [0.3, 0.4, 0.0, 0.7, 0.4, 0.0, 0.5, 0.8, 0.0];
+    this.triangleVertexBuffer.itemSize = 3;
+    this.triangleVertexBuffer.numOfItems = 3;
 
-    // this.gl.bufferData(
-    //   this.gl.ARRAY_BUFFER,
-    //   new Float32Array(triangleVertices),
-    //   this.gl.STATIC_DRAW
-    // );
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array(triangleVertices),
+      this.gl.STATIC_DRAW
+    );
 
-    // // 色付き三角形
-    // this.triangleVertexColorBuffer.buffer = this.gl.createBuffer();
-    // this.gl.bindBuffer(
-    //   this.gl.ARRAY_BUFFER,
-    //   this.triangleVertexColorBuffer.buffer
-    // );
+    // 色付き三角形
+    this.triangleVertexColorBuffer.buffer = this.gl.createBuffer();
+    this.gl.bindBuffer(
+      this.gl.ARRAY_BUFFER,
+      this.triangleVertexColorBuffer.buffer
+    );
 
-    // const colors = [1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0];
-    // this.triangleVertexColorBuffer.itemSize = 4;
-    // this.triangleVertexColorBuffer.numOfItems = 3;
+    const colors = [1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0];
+    this.triangleVertexColorBuffer.itemSize = 4;
+    this.triangleVertexColorBuffer.numOfItems = 3;
 
-    // this.gl.bufferData(
-    //   this.gl.ARRAY_BUFFER,
-    //   new Float32Array(colors),
-    //   this.gl.STATIC_DRAW
-    // );
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array(colors),
+      this.gl.STATIC_DRAW
+    );
 
     // strip triangle
     this.stripVertexBuffer.buffer = this.gl.createBuffer();
