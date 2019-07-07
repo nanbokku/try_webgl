@@ -3,7 +3,7 @@ import { mat4 } from 'gl-matrix';
 export class TableDrawer {
   constructor() {
     this.canvas = document.getElementById('canvas');
-    this.canvas = WebGLDebugUtils.makeLostContextSimulatingCanvas(canvas);
+    this.canvas = WebGLDebugUtils.makeLostContextSimulatingCanvas(this.canvas);
     this.canvas.addEventListener(
       'webglcontextlost',
       event => {
@@ -24,8 +24,13 @@ export class TableDrawer {
         this.setupFloorBuffers();
         this.setupCubeBuffers();
         this.setupTextures();
-        this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+        this.gl.frontFace(this.gl.CCW);
+        this.gl.cullFace(this.gl.BACK);
+        this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
+        this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
         this.requestId = requestAnimationFrame(() => {
           this.draw();
         });
@@ -38,6 +43,7 @@ export class TableDrawer {
     });
 
     this.gl = this.getWebGLContext(this.canvas);
+
     this.modelViewMatrix = mat4.create();
     this.projectionMatrix = mat4.create();
     this.modelViewMatrixStack = [];
@@ -48,8 +54,12 @@ export class TableDrawer {
     this.setupCubeBuffers();
     this.setupTextures();
 
-    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    this.gl.frontFace(this.gl.CCW);
+    this.gl.cullFace(this.gl.BACK);
+    this.gl.enable(this.gl.CULL_FACE);
     this.gl.enable(this.gl.DEPTH_TEST);
+
+    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
   }
 
   draw() {
@@ -59,7 +69,7 @@ export class TableDrawer {
       this.projectionMatrix,
       45,
       this.gl.viewportWidth / this.gl.viewportHeight,
-      0.1,
+      1,
       100.0
     );
     mat4.identity(this.modelViewMatrix);
@@ -71,6 +81,12 @@ export class TableDrawer {
     this.gl.uniform1i(this.uniformSamplerLocation, 0);
 
     this.drawFloor();
+
+    this.pushModelViewMatrix();
+    mat4.translate(this.modelViewMatrix, this.modelViewMatrix, [0.0, 1.1, 0.0]);
+    this.uploadModelViewMatrixToShader();
+    this.drawTable();
+    this.popModelViewMatrix();
 
     this.pushModelViewMatrix();
     mat4.translate(this.modelViewMatrix, this.modelViewMatrix, [0.0, 2.7, 0.0]);
@@ -131,18 +147,19 @@ export class TableDrawer {
     };
 
     this.ongoingImageLoads.push(image);
+    image.crossOrigin = 'anonymous';
     image.src = url;
   }
 
   setupTextures() {
     this.woodTexture = this.gl.createTexture();
-    this.loadImageForTexture('../img/wood_128x128.jpg', this.woodTexture);
+    this.loadImageForTexture('/img/wood_128x128.jpg', this.woodTexture);
 
     this.groundTexture = this.gl.createTexture();
-    this.loadImageForTexture('../img/wood_floor_256.jpg', this.groundTexture);
+    this.loadImageForTexture('/img/wood_floor_256.jpg', this.groundTexture);
 
     this.boxTexture = this.gl.createTexture();
-    this.loadImageForTexture('../img/wicker_256.jpg', this.boxTexture);
+    this.loadImageForTexture('/img/wicker_256.jpg', this.boxTexture);
   }
 
   uploadModelViewMatrixToShader() {
@@ -168,7 +185,7 @@ export class TableDrawer {
       this.FLOOR_VERTEX_POS_BUF_ITEM_SIZE,
       this.gl.FLOAT,
       false,
-      20,
+      Float32Array.BYTES_PER_ELEMENT * 5,
       0
     );
     this.gl.vertexAttribPointer(
@@ -176,8 +193,8 @@ export class TableDrawer {
       this.FLOOR_VERTEX_TEX_COORD_BUF_ITEM_SIZE,
       this.gl.FLOAT,
       false,
-      20,
-      12
+      Float32Array.BYTES_PER_ELEMENT * 5,
+      Float32Array.BYTES_PER_ELEMENT * 3
     );
 
     this.gl.activeTexture(this.gl.TEXTURE0);
@@ -201,8 +218,22 @@ export class TableDrawer {
       0
     );
 
+    this.gl.bindBuffer(
+      this.gl.ARRAY_BUFFER,
+      this.cubeVertexTextureCoordinateBuffer
+    );
+    this.gl.vertexAttribPointer(
+      this.vertexTextureAttributeLocation,
+      this.CUBE_VERTEX_TEX_COORD_BUF_ITEM_SIZE,
+      this.gl.FLOAT,
+      false,
+      0,
+      0
+    );
+
     this.gl.activeTexture(this.gl.TEXTURE0);
     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+
     this.gl.bindBuffer(
       this.gl.ELEMENT_ARRAY_BUFFER,
       this.cubeVertexIndexBuffer
@@ -211,7 +242,7 @@ export class TableDrawer {
     this.gl.drawElements(
       this.gl.TRIANGLES,
       this.CUBE_VERTEX_INDEX_BUF_NUM_ITEMS,
-      this.gl.UNSIGNED_SHORT,
+      this.gl.UNSIGNED_BYTE,
       0
     );
   }
@@ -249,6 +280,7 @@ export class TableDrawer {
     if (this.modelViewMatrixStack.length === 0) {
       throw 'Error popModelViewMatrix() - Stack was empty.';
     }
+
     this.modelViewMatrix = this.modelViewMatrixStack.pop();
   }
 
@@ -462,7 +494,7 @@ export class TableDrawer {
 
     this.gl.bufferData(
       this.gl.ELEMENT_ARRAY_BUFFER,
-      new Uint16Array(cubeVertexIndices),
+      new Uint8Array(cubeVertexIndices),
       this.gl.STATIC_DRAW
     );
     this.CUBE_VERTEX_INDEX_BUF_ITEM_SIZE = 1;
@@ -524,10 +556,10 @@ export class TableDrawer {
       positionView[positionOffsetInFloats + 2] = floorVertex[i * 5 + 2];
       textureView[textureOffsetInFloats] = floorVertex[i * 5 + 3];
       textureView[textureOffsetInFloats + 1] = floorVertex[i * 5 + 4];
-    }
 
-    positionOffsetInFloats += vertexSizeInFloats;
-    textureOffsetInFloats += vertexSizeInFloats;
+      positionOffsetInFloats += vertexSizeInFloats;
+      textureOffsetInFloats += vertexSizeInFloats;
+    }
 
     this.gl.bufferData(this.gl.ARRAY_BUFFER, arrayBuffer, this.gl.STATIC_DRAW);
   }
@@ -556,11 +588,11 @@ export class TableDrawer {
       shaderProgram,
       'aVertexPosition'
     );
-    this.gl.vertexTextureAttributeLocation = this.gl.getAttribLocation(
+    this.vertexTextureAttributeLocation = this.gl.getAttribLocation(
       shaderProgram,
       'aTextureCoordinates'
     );
-    this.gl.uniformPMatrixLocation = this.gl.getUniformLocation(
+    this.uniformPMatrixLocation = this.gl.getUniformLocation(
       shaderProgram,
       'uPMatrix'
     );
