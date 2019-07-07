@@ -1,6 +1,8 @@
 env:
   browser: true
   es6: true
+globals:
+  WebGLDebugUtils: true
 extends: 'eslint:recommended'
 parserOptions:
   ecmaVersion: 2018
@@ -8,7 +10,7 @@ parserOptions:
 rules:
   indent:
     - error
-    - 4
+    - 2
   linebreak-style:
     - error
     - windows

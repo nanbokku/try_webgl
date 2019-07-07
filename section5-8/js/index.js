@@ -5,9 +5,6 @@ window.onload = () => {
 };
 
 let startup = () => {
-  const gl = new TableDrawer();
-
-  window.setTimeout(() => {
-    gl.draw();
-  }, 500);
+  const tableDrawer = new TableDrawer();
+  tableDrawer.draw();
 };
